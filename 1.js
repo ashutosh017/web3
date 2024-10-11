@@ -1,11 +1,6 @@
-const crypto = require('crypto')
-
+import crypto from 'crypto'
 // const input = '100xDevs';
 // const hash = crypto.createHash('sha256').update(input).digest('hex')
-
-// console.log(hash);
-
-
 function hashStartsWith00000(){
     const prefix = '00000';
     let val=0;
@@ -29,7 +24,6 @@ function inputStartsWtih100xDevs(){
         val++;
     }
 }
-
 function findANonceForAGivenInput(input){
     let nonce=0;
     while(true){
