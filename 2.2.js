@@ -1,18 +1,16 @@
-// Asymetric Encryption
-import * as ed from '@noble/ed25519'
+// generating mnemonic and seed phrase
 
-async function main(){
-    const privKey = ed.utils.randomPrivateKey();
+import nacl from "tweetnacl";
+import { generateMnemonic, mnemonicToSeedSync } from "bip39";
+import { derivePath } from "ed25519-hd-key";
+import { Keypair } from "@solana/web3.js";
 
-    const message = new TextEncoder().encode('hello world')
-
-    const pubKey = await ed.getPublicKeyAsync(privKey);
-
-    const signature = await ed.signAsync(message, privKey);
-
-    const isValid = await ed.verifyAsync(signature,message,pubKey);
-
-    console.log(isValid);
-
+const mnemonic = generateMnemonic();
+const seed = mnemonicToSeedSync(mnemonic);
+for (let i = 0; i < 4; i++) {
+  const path = `m/44'/501'/${i}'/0'`; // This is the derivation path
+  const derivedSeed = derivePath(path, seed.toString("hex"));
+//   console.log("derived seed: ",derivedSeed);
+  const secret = nacl.sign.keyPair.fromSeed(derivedSeed.key).secretKey;
+  console.log(Keypair.fromSecretKey(secret).publicKey.toBase58());
 }
-main();
