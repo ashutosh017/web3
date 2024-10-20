@@ -2,12 +2,15 @@ import { useEffect, useState } from "react";
 import { mnemonicToSeed } from "bip39";
 import { Wallet, HDNodeWallet, ethers } from "ethers";
 import Card from "./Card";
+import handleDelete from "../handlers/handleDelete";
 const api_key = import.meta.env.VITE_ETHERSCAN_API_KEY
+
 
 
 export const EthWallet = ({ mnemonic }) => {
   useEffect(()=>{
     const x = localStorage.getItem('EthWalletAddresses');
+    if(!x)return;
     console.log("Eth wallet addresses: ",x);
     const y = x.split(',')
     setAddresses([...y])
@@ -17,14 +20,11 @@ export const EthWallet = ({ mnemonic }) => {
   const getBalance = async (address,setBalance) => {
     const apiKey = api_key
     const url = `https://api.etherscan.io/api?module=account&action=balance&address=${address}&tag=latest&apikey=${apiKey}`;
-  
     const response = await fetch(url);
     const data = await response.json();
-    
     const balanceInWei = data.result;
     const balanceInEther = ethers.formatEther(balanceInWei);
     setBalance(balanceInEther)
-    
     console.log(`Balance of ${address}: ${balanceInEther} ETH`);
     return balanceInEther;
   };
@@ -37,9 +37,12 @@ export const EthWallet = ({ mnemonic }) => {
     const privateKey = child.privateKey;
     const wallet = new Wallet(privateKey);
     console.log(wallet)
-    localStorage.setItem('EthWalletAddresses',[...addresses,wallet.address])
     setCurrentIndex(currentIndex + 1);
-    setAddresses([...addresses, wallet.address]);
+    setAddresses((prevAddresses)=>{
+      const updatedAddresses = [...prevAddresses, wallet.address]
+      localStorage.setItem('EthWalletAddresses',updatedAddresses)
+      return updatedAddresses;
+    });
   }
   return (
     <div>
@@ -50,11 +53,11 @@ export const EthWallet = ({ mnemonic }) => {
         Add ETH wallet
       </button>
 
-      {addresses.length > 0 && (
+      {addresses.length > 0 &&  (
         <div className="flex flex-col  space-y-2 mt-8 bg-violet-950 p-2 border rounded-md border-gray-500  text-white">
           {addresses.map((p, ind) => (
             <div key={ind}>
-              <Card p={p} getBalance={getBalance} currency={'ETH'} />
+              <Card p={p} getBalance={getBalance} currency={'ETH'} setState={setAddresses}/>
             </div>
           ))}
         </div>
