@@ -7,6 +7,7 @@ import nacl from "tweetnacl";
 import { clusterApiUrl, Connection, PublicKey } from "@solana/web3.js";
 import Card from "./Card";
 
+
 export function SolanaWallet({ mnemonic }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [publicKeys, setPublicKeys] = useState([]);
@@ -29,14 +30,8 @@ export function SolanaWallet({ mnemonic }) {
     if(!x)return;
     const y = x.split(',')
     console.log("y: ",y, "typeof Y: ",typeof(y))
-    // y.forEach((key)=>{
-    //   const newKey = new PublicKey(key);
-    //   setPublicKeys([...publicKeys,newKey])
-
-    // })
     setPublicKeys([...y])
-    // console.log(publicKeys)
-    // setPublicKeys([x])
+
 
   },[])
 const addSolWallet = async function () {

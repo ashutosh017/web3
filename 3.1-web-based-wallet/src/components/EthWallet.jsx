@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { mnemonicToSeed } from "bip39";
-import { Wallet, HDNodeWallet } from "ethers";
+import { Wallet, HDNodeWallet, ethers } from "ethers";
 import Card from "./Card";
+const api_key = import.meta.env.VITE_ETHERSCAN_API_KEY
 
 
 export const EthWallet = ({ mnemonic }) => {
@@ -13,9 +14,19 @@ export const EthWallet = ({ mnemonic }) => {
   },[])
   const [currentIndex, setCurrentIndex] = useState(0);
   const [addresses, setAddresses] = useState([]);
-  const getBalance = async (address) => {
-    const balance = await provider.getBalance(address);
-    console.log(balance)
+  const getBalance = async (address,setBalance) => {
+    const apiKey = api_key
+    const url = `https://api.etherscan.io/api?module=account&action=balance&address=${address}&tag=latest&apikey=${apiKey}`;
+  
+    const response = await fetch(url);
+    const data = await response.json();
+    
+    const balanceInWei = data.result;
+    const balanceInEther = ethers.formatEther(balanceInWei);
+    setBalance(balanceInEther)
+    
+    console.log(`Balance of ${address}: ${balanceInEther} ETH`);
+    return balanceInEther;
   };
   
   const addEthWallet = async function () {
@@ -25,6 +36,7 @@ export const EthWallet = ({ mnemonic }) => {
     const child = hdNode.derivePath(derivationPath);
     const privateKey = child.privateKey;
     const wallet = new Wallet(privateKey);
+    console.log(wallet)
     localStorage.setItem('EthWalletAddresses',[...addresses,wallet.address])
     setCurrentIndex(currentIndex + 1);
     setAddresses([...addresses, wallet.address]);
@@ -42,7 +54,7 @@ export const EthWallet = ({ mnemonic }) => {
         <div className="flex flex-col  space-y-2 mt-8 bg-violet-950 p-2 border rounded-md border-gray-500  text-white">
           {addresses.map((p, ind) => (
             <div key={ind}>
-              <Card p={`Eth - ${p}`} getBalance={()=>getBalance(p)} currency={'ETH'} />
+              <Card p={p} getBalance={getBalance} currency={'ETH'} />
             </div>
           ))}
         </div>
