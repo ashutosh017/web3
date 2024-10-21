@@ -92,7 +92,7 @@ function App() {
           </div>
 
           {/* <SolanaWallet mnemonic={mnemonic} /> */}
-          <EthWallet mnemonic={mnemonic} />
+          {/* <EthWallet mnemonic={mnemonic} /> */}
         </>
       )}
       {isModalOpen && (
