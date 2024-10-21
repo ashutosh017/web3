@@ -5,7 +5,6 @@ import { Keypair } from "@solana/web3.js";
 import nacl from "tweetnacl";
 import { clusterApiUrl, Connection, PublicKey } from "@solana/web3.js";
 import Card from "./Card";
-import handleDelete from "../handlers/handleDelete";
 
 export function SolanaWallet({ mnemonic }) {
   const [currentIndex, setCurrentIndex] = useState(0);

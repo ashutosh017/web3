@@ -2,43 +2,69 @@ import { generateMnemonic } from "bip39";
 import { useEffect, useState } from "react";
 import { SolanaWallet } from "./components/SolWallet";
 import { EthWallet } from "./components/EthWallet";
+import Modal from "./components/Modal";
+import { cancelDelete, confirmDelete, genMnemonic, handleDeleteEverything } from "./handlers/handlers";
 
 function App() {
   const [mnemonic, setMnemonic] = useState("");
-  const [isDisabled, setIsDisabled] = useState(false); // State to disable button
+  const [isDisabled, setIsDisabled] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false); 
+  const [showPopup, setShowPopup] = useState(false);
+  
+  const handleCopy = () => {
+    const mnemonicText = mnemonic.split(" ").join(" ");
+    navigator.clipboard.writeText(mnemonicText).then(() => {
+      setShowPopup(true); // Show popup
+      setTimeout(() => {
+        setShowPopup(false); // Hide popup after 3 seconds
+      }, 1000);
+    }).catch((err) => {
+      console.error("Failed to copy mnemonic:", err);
+    });
+  };
 
   useEffect(() => {
     const savedMnemonic = localStorage.getItem("mnemonic");
     if (savedMnemonic) {
       setMnemonic(savedMnemonic);
-      setIsDisabled(true); // Disable the button if mnemonic exists
+      setIsDisabled(true);
     }
   }, []);
 
   return (
-    <div className="px-4 py-8 bg-purple-950 min-h-screen">
+    <div className="sm:px-20 md:px-40 lg:px-60 px-4 py-8 bg-purple-950 min-h-screen  ">
+      <div className="flex  relative">
       <button
-        className={`px-4 py-2 rounded-md text-white ${
+        className={`px-4 py-2 text-sm rounded-md sm:text-base text-white ${
           isDisabled
             ? "bg-gray-400 cursor-not-allowed"
             : "bg-blue-600 hover:bg-blue-700 cursor-pointer"
         }`}
-        onClick={async function () {
-          if (!isDisabled) {
-            const mn = await generateMnemonic();
-            setMnemonic(mn);
-            localStorage.setItem("mnemonic", mn); // Store new mnemonic in localStorage
-            setIsDisabled(true); // Disable the button after mnemonic is generated
-          }
-        }}
-        disabled={isDisabled} // Disable the button conditionally
+        onClick={()=>genMnemonic(setMnemonic, isDisabled,setIsDisabled)}
+        disabled={isDisabled} 
       >
         Generate Mnemonic
       </button>
+    {
+      isDisabled &&
+      <button
+      onClick={()=>handleDeleteEverything(setIsModalOpen)}
+        className={`px-4 py-2 absolute right-0 text-sm sm:text-base rounded-md bg-red-600 hover:bg-red-700 cursor-pointer text-white ml-2
+        
+          `}
+      >
+        Delete Everything
+      </button>
+    }
+      </div>
 
       {mnemonic && (
         <>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 mt-8 bg-violet-950 p-4 border rounded-md border-gray-500 text-white">
+       <div className="mt-8 bg-violet-950 p-4 border rounded-md border-gray-500 text-white">
+       <div className="w-full italic text-gray-500 pb-4">Click anywhere to copy</div>
+
+       <div onClick={handleCopy} className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 ">
+
             {mnemonic.split(" ").map((val, ind) => (
               <div
                 key={ind}
@@ -48,10 +74,20 @@ function App() {
               </div>
             ))}
           </div>
+       </div>
+
 
           <SolanaWallet mnemonic={mnemonic} />
           <EthWallet mnemonic={mnemonic} />
         </>
+      )}
+       {isModalOpen && (
+        <Modal onConfirm={()=>confirmDelete(setMnemonic,setIsDisabled,setIsModalOpen)} onCancel={()=>cancelDelete(setIsModalOpen)} />
+      )}
+        {showPopup && (
+        <div className="fixed top-4 left-1/2 transform -translate-x-1/2 bg-green-600 text-white px-4 py-2 rounded-md shadow-lg transition-opacity duration-300 ease-in-out">
+          Mnemonic copied to clipboard!
+        </div>
       )}
     </div>
   );

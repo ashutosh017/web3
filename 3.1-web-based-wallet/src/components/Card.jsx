@@ -1,5 +1,5 @@
 import { useState } from "react";
-import handleDelete from "../handlers/handleDelete";
+import { handleDelete } from "../handlers/handlers";
 
 export default function Card({ p, getBalance, currency, setState}) {
   const [balance, setBalance] = useState(null);

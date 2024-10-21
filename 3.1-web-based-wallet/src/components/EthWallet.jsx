@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { mnemonicToSeed } from "bip39";
 import { Wallet, HDNodeWallet, ethers } from "ethers";
 import Card from "./Card";
-import handleDelete from "../handlers/handleDelete";
 const api_key = import.meta.env.VITE_ETHERSCAN_API_KEY
 
 
