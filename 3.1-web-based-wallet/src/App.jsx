@@ -91,7 +91,7 @@ function App() {
             </div>
           </div>
 
-          <SolanaWallet mnemonic={mnemonic} />
+          {/* <SolanaWallet mnemonic={mnemonic} /> */}
           <EthWallet mnemonic={mnemonic} />
         </>
       )}
