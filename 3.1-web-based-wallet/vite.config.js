@@ -7,7 +7,7 @@ export default defineConfig({
   plugins: [react(), nodePolyfills()],
   build: {
     rollupOptions: {
-      external: ['ed25519-hd-key', '@solana/web3.js'], // Mark it as an external dependency
+      external: ['ed25519-hd-key', '@solana/web3.js', 'tweetnacl'], // Mark it as an external dependency
     },
   },
 })
