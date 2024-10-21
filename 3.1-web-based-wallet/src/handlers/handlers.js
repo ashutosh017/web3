@@ -3,18 +3,25 @@ import { generateMnemonic } from "bip39";
 export const handleDelete = (p, currency, setState) => {
   let key;
   if (currency === "ETH") {
-    key = "EthWalletAddresses";
+    key = "ethKeyPairs";
   } else {
-    key = "solPubKeys";
+    key = "solKeyPairs";
   }
-  const x = localStorage.getItem(key);
-  const y = x.split(",");
-  console.log(y);
-  const z = y.filter((i) => i !== p);
-  setState([...z]);
-  console.log(z);
-  localStorage.setItem(key, [...z]);
+
+  const storedData = localStorage.getItem(key);
+  if (!storedData) return;
+
+  let walletArray = JSON.parse(storedData);
+
+  let updatedWalletArray = walletArray.filter((wallet) => wallet.publicKey !== p);
+
+  setState(updatedWalletArray);
+
+  localStorage.setItem(key, JSON.stringify(updatedWalletArray));
+
+  console.log("Updated walletArray: ", updatedWalletArray);
 };
+
 
 export const handleDeleteEverything = (setIsModalOpen) => {
   setIsModalOpen(true);

@@ -3,19 +3,15 @@ import { mnemonicToSeed } from "bip39";
 import { Wallet, HDNodeWallet, ethers } from "ethers";
 import Card from "./Card";
 const api_key = import.meta.env.VITE_ETHERSCAN_API_KEY
-
-
-
 export const EthWallet = ({ mnemonic }) => {
-  useEffect(()=>{
-    const x = localStorage.getItem('EthWalletAddresses');
-    if(!x)return;
-    console.log("Eth wallet addresses: ",x);
-    const y = x.split(',')
-    setAddresses([...y])
-  },[])
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [addresses, setAddresses] = useState([]);
+  const [keyPairs, setKeyPairs] = useState([])
+  useEffect(()=>{
+    const x = localStorage.getItem('ethKeyPairs');
+    if(!x)return;
+    const y = JSON.parse(x);
+    setKeyPairs([...y]);
+  },[])
   const getBalance = async (address,setBalance) => {
     const apiKey = api_key
     const url = `https://api.etherscan.io/api?module=account&action=balance&address=${address}&tag=latest&apikey=${apiKey}`;
@@ -24,8 +20,6 @@ export const EthWallet = ({ mnemonic }) => {
     const balanceInWei = data.result;
     const balanceInEther = ethers.formatEther(balanceInWei);
     setBalance(balanceInEther)
-    console.log(`Balance of ${address}: ${balanceInEther} ETH`);
-    return balanceInEther;
   };
   
   const addEthWallet = async function () {
@@ -35,28 +29,28 @@ export const EthWallet = ({ mnemonic }) => {
     const child = hdNode.derivePath(derivationPath);
     const privateKey = child.privateKey;
     const wallet = new Wallet(privateKey);
-    console.log(wallet)
+    console.log("wallet in etharium: ",wallet)
     setCurrentIndex(currentIndex + 1);
-    setAddresses((prevAddresses)=>{
-      const updatedAddresses = [...prevAddresses, wallet.address]
-      localStorage.setItem('EthWalletAddresses',updatedAddresses)
-      return updatedAddresses;
+    setKeyPairs((prevKeyPairs)=>{
+      const updatedKeyPairs = [...prevKeyPairs, {publicKey:wallet.address,privateKey:wallet.privateKey}]
+      localStorage.setItem('ethKeyPairs',JSON.stringify(updatedKeyPairs))
+      return updatedKeyPairs;
     });
   }
   return (
     <div>
       <button
         onClick={addEthWallet}
-        className="bg-blue-600 px-2 py-1 cursor-pointer text-white rounded-md mt-8"
+        className="bg-blue-600 hover:bg-blue-700 px-2 py-1 cursor-pointer text-white rounded-md mt-8"
       >
         Add ETH wallet
       </button>
 
-      {addresses.length > 0 &&  (
+      {keyPairs.length > 0 &&  (
         <div className="flex flex-col  space-y-2 mt-8 bg-violet-950 p-2 border rounded-md border-gray-500  text-white">
-          {addresses.map((p, ind) => (
+          {keyPairs.map((kp, ind) => (
             <div key={ind}>
-              <Card p={p} getBalance={getBalance} currency={'ETH'} setState={setAddresses}/>
+              <Card keyPair={{publicKey:kp.publicKey,privateKey:kp.privateKey}} getBalance={getBalance} currency={'ETH'} setState={setKeyPairs}/>
             </div>
           ))}
         </div>

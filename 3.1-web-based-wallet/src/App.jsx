@@ -8,6 +8,7 @@ import {
   genMnemonic,
   handleDeleteEverything,
 } from "./handlers/handlers";
+import { MdCopyAll } from "react-icons/md";
 
 function App() {
   const [mnemonic, setMnemonic] = useState("");
@@ -39,7 +40,7 @@ function App() {
   }, []);
 
   return (
-    <div className="sm:px-20 md:px-40 lg:px-60 px-4 py-8 bg-purple-950 min-h-screen  ">
+    <div className="sm:px-20 md:px-40 lg:px-60 px-4 py-8 bg-purple-950 min-h-screen text-sm sm:text-base ">
       <div className="flex  relative">
         <button
           className={`px-4 py-2 text-sm rounded-md sm:text-base text-white ${
@@ -66,24 +67,23 @@ function App() {
 
       {mnemonic && (
         <>
-          <div className="mt-8 bg-violet-950 p-4 border rounded-md border-gray-500 text-white"
-              onClick={handleCopy}
-
+          <div
+            className="mt-8 bg-violet-950 p-4 border rounded-md border-gray-500 text-white cursor-pointer"
+            onClick={handleCopy}
           >
-            <div className="w-full italic text-gray-500 pb-4 flex space-x-2">
-              <div className="border relative w-4 h-4 border-gray-400">
-                <div className="border absolute top-1 right-1 w-4 h-4 bg-violet-950 border-gray-400"></div>
-              </div>
-              <div>Click anywhere to copy</div>
+            <div className="w-full italic text-gray-500 pb-4 flex space-x-2 items-center " >
+              <div className="">Click anywhere to copy</div>
+              {/* <div className="border relative w-3.5 h-4 border-gray-400 rotate-12">
+                <div className="border absolute top-0.5 right-0.5 w-3.5 h-4 bg-violet-950 border-gray-400"></div>
+              </div> */}
+             <MdCopyAll className="size-6 hover:text-gray-400"/>
             </div>
 
-            <div
-              className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 "
-            >
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 ">
               {mnemonic.split(" ").map((val, ind) => (
                 <div
                   key={ind}
-                  className="p-2 bg-gray-800 rounded-md text-center break-words"
+                  className="p-2 border border-gray-500 rounded-md text-center break-words"
                 >
                   {val}
                 </div>

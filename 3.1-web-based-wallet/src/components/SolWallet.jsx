@@ -1,36 +1,31 @@
 import { useEffect, useState } from "react";
 import { mnemonicToSeed, mnemonicToSeedSync } from "bip39";
 import { derivePath } from "ed25519-hd-key";
-// import { derivePath } from "../../";
-
 import { Keypair } from "@solana/web3.js";
 import nacl from "tweetnacl";
 import { clusterApiUrl, Connection, PublicKey } from "@solana/web3.js";
 import Card from "./Card";
+import bs58 from 'bs58'
 
 export function SolanaWallet({ mnemonic }) {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [publicKeys, setPublicKeys] = useState([]);
+  const[keyPairs, setKeyPairs] = useState([])
   const getBalance = async (publicKey, setBalance) => {
-    console.log("1: ", publicKey);
     const connection = new Connection(clusterApiUrl("devnet"), "confirmed");
-    console.log("2: ");
     const publicKey2 = new PublicKey(
       publicKey
     );
-    const balance = await connection.getBalance(publicKey2);
-    setBalance(balance / Number(1e9));
-    console.log("balance: ", balance);
+    const bal = await connection.getBalance(publicKey2);
+    const balance = (bal / 1e9).toFixed(2);
+    setBalance((balance));
   };
   useEffect(() => {
-    const x = localStorage.getItem("solPubKeys");
-    console.log(typeof x);
-    console.log(x);
+    const x = localStorage.getItem("solKeyPairs");
     if (!x) return;
-    const y = x.split(",");
-    console.log("y: ", y, "typeof Y: ", typeof y);
-    setPublicKeys([...y]);
+    const y = JSON.parse(x);
+    setKeyPairs([...y]);
   }, []);
+  
   const addSolWallet = async function () {
     const seed = await mnemonicToSeed(mnemonic);
     console.log("seed: ", seed, "mnemonic: ", mnemonic);
@@ -39,28 +34,32 @@ export function SolanaWallet({ mnemonic }) {
     const secret = nacl.sign.keyPair.fromSeed(derivedSeed).secretKey;
     const keypair = Keypair.fromSecretKey(secret);
     setCurrentIndex(currentIndex + 1);
-    setPublicKeys((prevPublicKeys) => {
-      const updatedKeys = [...prevPublicKeys, keypair.publicKey.toBase58()];
-      localStorage.setItem("solPubKeys", updatedKeys);
-      return updatedKeys;
+    setKeyPairs((prevKeyPairs) => {
+      const privKey = bs58.encode(keypair.secretKey);
+      const updatedKeyPairs = [
+        ...prevKeyPairs,
+        { publicKey: keypair.publicKey.toBase58(), privateKey: privKey },
+      ];
+      localStorage.setItem("solKeyPairs", JSON.stringify(updatedKeyPairs));
+      return updatedKeyPairs;
     });
-    localStorage.setItem("solPubKeys", [...publicKeys, keypair.publicKey]);
   };
+  
 
   return (
     <div>
       <button
         onClick={addSolWallet}
-        className="bg-blue-600 px-2 py-1 cursor-pointer text-white rounded-md mt-8"
+        className="bg-blue-600 hover:bg-blue-700 px-2 py-1 cursor-pointer text-white rounded-md mt-8"
       >
         Add SOL wallet
       </button>
 
-      {publicKeys.length > 0 && (
+      {keyPairs.length > 0 && (
         <div className="flex flex-col  space-y-2 mt-8 bg-violet-950 p-2 border rounded-md border-gray-500  text-white">
-          {publicKeys.map((p, ind) => (
+          {keyPairs.map((kp, ind) => (
             <div key={ind}>
-              <Card p={p} getBalance={getBalance} currency={"SOL"} setState={setPublicKeys} />
+              <Card keyPair={{publicKey:kp.publicKey,privateKey:kp.privateKey}} getBalance={getBalance} currency={"SOL"} setState={setKeyPairs} />
             </div>
           ))}
         </div>
