@@ -4,7 +4,7 @@ import { mnemonicToSeed, mnemonicToSeedSync } from "bip39";
 import {derivePath} from '../../node_modules/ed25519-hd-key/dist/index.js'
 import { Keypair } from "@solana/web3.js";
 // import nacl from "tweetnacl";
-import {tweetnacl as nacl} from '../../node_modules/tweetnacl/nacl.js'
+import nacl from '../../node_modules/tweetnacl/nacl.js'
 import { clusterApiUrl, Connection, PublicKey } from "@solana/web3.js";
 import Card from "./Card";
 import bs58 from 'bs58'
