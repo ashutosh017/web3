@@ -7,22 +7,14 @@ export const handleDelete = (p, currency, setState) => {
   } else {
     key = "solKeyPairs";
   }
-
   const storedData = localStorage.getItem(key);
   if (!storedData) return;
-
   let walletArray = JSON.parse(storedData);
-
   let updatedWalletArray = walletArray.filter((wallet) => wallet.publicKey !== p);
-
   setState(updatedWalletArray);
-
   localStorage.setItem(key, JSON.stringify(updatedWalletArray));
-
   console.log("Updated walletArray: ", updatedWalletArray);
 };
-
-
 export const handleDeleteEverything = (setIsModalOpen) => {
   setIsModalOpen(true);
 };
@@ -35,7 +27,6 @@ export const confirmDelete = (setMnemonic,setIsDisabled,setIsModalOpen) => {
 export const cancelDelete = (setIsModalOpen) => {
   setIsModalOpen(false);
 };
-
 export const genMnemonic = async (setMnemonic,isDisabled, setIsDisabled ) => {
   if (!isDisabled) {
     const mn = generateMnemonic();

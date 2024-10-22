@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { mnemonicToSeed, mnemonicToSeedSync } from "bip39";
-import { derivePath } from "ed25519-hd-key";
+// import { derivePath } from "ed25519-hd-key";
+import {derivePath} from '../../node_modules/ed25519-hd-key/dist/index.js'
 import { Keypair } from "@solana/web3.js";
 import nacl from "tweetnacl";
 import { clusterApiUrl, Connection, PublicKey } from "@solana/web3.js";
