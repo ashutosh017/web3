@@ -4,7 +4,9 @@ import { mnemonicToSeed, mnemonicToSeedSync } from "bip39";
 // import {derivePath} from '../../node_modules/ed25519-hd-key/dist/index.js'
 import * as ed25519 from 'ed25519-hd-key';
 const { derivePath } = ed25519;
-import { Keypair,  clusterApiUrl, Connection, PublicKey} from "@solana/web3.js";
+// import { Keypair,  clusterApiUrl, Connection, PublicKey} from "@solana/web3.js";
+import * as solana_web3 from '@solana/web3.js'
+const {Keypair,clusterApiUrl, Connection, PublicKey} = solana_web3;
 // import {Keypair, clusterApiUrl, Connection, PublicKey} from '../../node_modules/@solana/web3.js/lib/index.esm.js'
 import nacl from "tweetnacl";
 import Card from "./Card";
