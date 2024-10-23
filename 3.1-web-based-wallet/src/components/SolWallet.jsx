@@ -3,9 +3,8 @@ import { mnemonicToSeed, mnemonicToSeedSync } from "bip39";
 // import { derivePath } from "ed25519-hd-key";
 import {derivePath} from '../../node_modules/ed25519-hd-key/dist/index.js'
 // import { Keypair } from "@solana/web3.js";
-import {Keypair} from '../../node_modules/@solana/web3.js/lib/index.esm.js'
+import {Keypair, clusterApiUrl, Connection, PublicKey} from '../../node_modules/@solana/web3.js/lib/index.esm.js'
 import nacl from "tweetnacl";
-import { clusterApiUrl, Connection, PublicKey } from "@solana/web3.js";
 import Card from "./Card";
 import bs58 from 'bs58'
 
