@@ -27,7 +27,7 @@ export function SignMessage() {
   return (
     <div>
       <Input ref={messageRef} placeholder="Message" />
-      <Button onClick={onClick}>Sign Message</Button>
+      <Button onclick={onClick}>Sign Message</Button>
     </div>
   );
 }

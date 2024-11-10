@@ -30,7 +30,7 @@ export default function Airdrop(){
                 // className="px-2 py-1 border border-gray-400 rounded-md mr-2 text-black" 
             />
             <Button
-                onClick={handleAirdrop}
+                onclick={handleAirdrop}
                 // className="border px-2 py-1 border-gray-400 rounded-md mr-2"
             >
                 Airdrop
