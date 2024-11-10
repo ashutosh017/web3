@@ -15,7 +15,7 @@ import { SignMessage } from "./components/SignMessage";
 import { SendTokens } from "./components/SendTokens";
 
 const rpc_url = import.meta.env.VITE_CUSTOM_RPC_URL;
-// console.log(rpc_url);
+console.log(rpc_url);
 function App() {
   return (
     <div className="p-2 lg:p-8 bg-zinc-950 text-white h-screen">
