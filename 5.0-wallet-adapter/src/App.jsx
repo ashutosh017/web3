@@ -14,6 +14,11 @@ import SolBalance from "./components/SolBalance";
 import { SignMessage } from "./components/SignMessage";
 import { SendTokens } from "./components/SendTokens";
 
+import { Buffer } from "buffer";
+// @ts-ignore
+window.Buffer = Buffer;
+
+
 const rpc_url = import.meta.env.VITE_CUSTOM_RPC_URL;
 // console.log(rpc_url);
 function App() {
