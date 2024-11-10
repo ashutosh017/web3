@@ -12,12 +12,13 @@ import "@solana/wallet-adapter-react-ui/styles.css";
 import Airdrop from "./components/Airdrop";
 import SolBalance from "./components/SolBalance";
 import { SignMessage } from "./components/SignMessage";
+import { SendTokens } from "./components/SendTokens";
 
 const rpc_url = import.meta.env.VITE_CUSTOM_RPC_URL;
 // console.log(rpc_url);
 function App() {
   return (
-    <div className="p-8 bg-zinc-950 text-white h-screen">
+    <div className="p-2 lg:p-8 bg-zinc-950 text-white h-screen">
       <ConnectionProvider
         endpoint={
           rpc_url
@@ -33,6 +34,7 @@ function App() {
           <div className="flex flex-col space-y-4">
           <Airdrop />
           <SignMessage/>
+          <SendTokens/>
           </div>
 
           </WalletModalProvider>
