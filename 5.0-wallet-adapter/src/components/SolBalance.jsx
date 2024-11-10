@@ -17,7 +17,7 @@ export default function SolBalance(){
         getBalance();
     }, [publicKey, connection]);
 
-    return <div className="mt-4 ">
+    return <div className=" m-1">
         Sol Balance: <span className="font-bold">{balance !== null ? balance : "Loading..."}</span>
     </div>;
 }

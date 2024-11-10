@@ -20,7 +20,7 @@ export default function Airdrop(){
     };
 
     return (
-        <div className="mt-4">
+        <div className="">
             <Input
             ref={amountRef}
                 // value={amount}

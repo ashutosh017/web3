@@ -15,7 +15,6 @@ import { SignMessage } from "./components/SignMessage";
 import { SendTokens } from "./components/SendTokens";
 
 import { Buffer } from "buffer";
-// @ts-ignore
 window.Buffer = Buffer;
 
 
@@ -23,7 +22,7 @@ const rpc_url = import.meta.env.VITE_CUSTOM_RPC_URL;
 // console.log(rpc_url);
 function App() {
   return (
-    <div className="p-2 lg:p-8 bg-zinc-950 text-white h-screen">
+    <div className="p-2 lg:p-8 bg-zinc-950 text-white h-screen ">
       <ConnectionProvider
         endpoint={
           rpc_url
@@ -35,8 +34,8 @@ function App() {
               <WalletMultiButton />
               <WalletDisconnectButton />
             </div>
+          <div className="flex flex-col mt-4">
             <SolBalance />
-          <div className="flex flex-col space-y-4">
           <Airdrop />
           <SignMessage/>
           <SendTokens/>
