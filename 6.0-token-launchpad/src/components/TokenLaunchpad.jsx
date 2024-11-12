@@ -4,6 +4,10 @@ import { useConnection, useWallet } from '@solana/wallet-adapter-react';
 import { TOKEN_2022_PROGRAM_ID, getMintLen, createInitializeMetadataPointerInstruction, createInitializeMintInstruction, TYPE_SIZE, LENGTH_SIZE, ExtensionType, getAssociatedTokenAddressSync, createAssociatedTokenAccountInstruction, createMintToInstruction } from "@solana/spl-token"
 import { createInitializeInstruction, pack } from '@solana/spl-token-metadata';
 import { useRef } from "react";
+import { createUmi } from "@metaplex-foundation/umi-bundle-defaults";
+import { walletAdapterIdentity } from "@metaplex-foundation/umi-signer-wallet-adapters";
+import { mplTokenMetadata } from "@metaplex-foundation/mpl-token-metadata";
+import { irysUploader } from "@metaplex-foundation/umi-uploader-irys";
 
 
 export function TokenLaunchpad() {
@@ -17,16 +21,27 @@ export function TokenLaunchpad() {
 
   const createToken = async () => {
     const mintKeypair = Keypair.generate();
-        const metadata = {
+        const external_metadata = {
             mint: mintKeypair.publicKey,
             name: nameRef.current.value,
             symbol: symbolRef.current.value,
-            uri: imageRef.current.value,
+            // uri: 'https://devnet.irys.xyz/6SiW9aGd7v8VMg7mbpDuLKaNp64KmfhUfdk7nPx4m5hR',
+            image:imageRef.current.value,
             additionalMetadata: [],
         };
+        const umi = createUmi(connection)
+		.use(walletAdapterIdentity(wallet))
+		.use(mplTokenMetadata())
+		.use(irysUploader());
+        const metadataUri = (await umi.uploader.uploadJson(external_metadata)).replace(
+            'arweave.net',
+            'gateway.irys.xyz'
+        );
+
+        console.log("metadata uri: ",metadataUri)
 
         const mintLen = getMintLen([ExtensionType.MetadataPointer]);
-        const metadataLen = TYPE_SIZE + LENGTH_SIZE + pack(metadata).length;
+        const metadataLen = TYPE_SIZE + LENGTH_SIZE + pack(external_metadata).length;
 
         const lamports = await connection.getMinimumBalanceForRentExemption(mintLen + metadataLen);
 
@@ -44,9 +59,9 @@ export function TokenLaunchpad() {
                 programId: TOKEN_2022_PROGRAM_ID,
                 mint: mintKeypair.publicKey,
                 metadata: mintKeypair.publicKey,
-                name: metadata.name,
-                symbol: metadata.symbol,
-                uri: metadata.uri,
+                name: external_metadata.name,
+                symbol: external_metadata.symbol,
+                uri: metadataUri,
                 mintAuthority: wallet.publicKey,
                 updateAuthority: wallet.publicKey,
             }),
@@ -57,6 +72,7 @@ export function TokenLaunchpad() {
         transaction.partialSign(mintKeypair);
 
         await wallet.sendTransaction(transaction, connection);
+        console.log("Transaction 1 successfull!")
 
         console.log(`Token mint created at ${mintKeypair.publicKey.toBase58()}`);
         const associatedToken = getAssociatedTokenAddressSync(
@@ -68,7 +84,6 @@ export function TokenLaunchpad() {
 
         console.log("associated token: ",associatedToken.toBase58());
 
-
         const transaction2 = new Transaction().add(
             createAssociatedTokenAccountInstruction(
                 wallet.publicKey,
@@ -78,18 +93,15 @@ export function TokenLaunchpad() {
                 TOKEN_2022_PROGRAM_ID,
             ),
         );
-        console.log("1")
         
         await wallet.sendTransaction(transaction2, connection);
-        console.log("2")
+        console.log("Transaction 2 successfull!")
         
         const transaction3 = new Transaction().add(
             createMintToInstruction(mintKeypair.publicKey, associatedToken, wallet.publicKey, initalSupplyRef.current.value*1000000000, [], TOKEN_2022_PROGRAM_ID)
         );
-        console.log("3")
+        console.log("Transaction 2 successfull!")
 
-        // const transaction4 = new Transaction().add
-        
         await wallet.sendTransaction(transaction3, connection);
 
         console.log("Minted!")
