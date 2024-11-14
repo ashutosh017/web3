@@ -1,4 +1,9 @@
-import { Keypair, PublicKey, SystemProgram, Transaction } from "@solana/web3.js";
+import {
+  Keypair,
+  PublicKey,
+  SystemProgram,
+  Transaction,
+} from "@solana/web3.js";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import {
   TOKEN_2022_PROGRAM_ID,
@@ -33,13 +38,14 @@ export function TokenLaunchpad() {
 
   const createToken = async () => {
     const mintKeypair = Keypair.generate();
+    console.log("Mint account address: " + mintKeypair.publicKey.toBase58());
 
     const external_metadata = {
       name: nameRef.current.value,
       symbol: symbolRef.current.value,
       image: imageRef.current.value,
       creators: [wallet.publicKey],
-    }
+    };
 
     const umi = createUmi(connection)
       .use(walletAdapterIdentity(wallet))
@@ -106,8 +112,34 @@ export function TokenLaunchpad() {
 
     await wallet.sendTransaction(transaction, connection);
 
-    console.log("Minted token address: " + mintKeypair.publicKey.toBase58());
+    const associatedToken = getAssociatedTokenAddressSync(
+      mintKeypair.publicKey,
+      wallet.publicKey,
+      false,
+      TOKEN_2022_PROGRAM_ID
+    );
 
+    console.log("associated token: ", associatedToken.toBase58());
+    const transaction2 = new Transaction().add(
+      createMintToInstruction(
+        mintKeypair.publicKey,
+        associatedToken,
+        wallet.publicKey,
+        initalSupplyRef.current.value * 1000000000,
+        [],
+        TOKEN_2022_PROGRAM_ID
+      )
+    );
+
+    transaction2.feePayer = wallet.publicKey;
+    transaction2.recentBlockhash = (
+      await connection.getLatestBlockhash()
+    ).blockhash;
+    transaction2.partialSign(mintKeypair);
+
+    await wallet.sendTransaction(transaction2, connection);
+
+console.log("minted!!")
     // ****************************************************************
     // const mintKeypair = Keypair.generate();
     // const external_metadata = {
