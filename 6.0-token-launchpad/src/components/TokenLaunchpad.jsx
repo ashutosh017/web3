@@ -18,6 +18,8 @@ import { createUmi } from "@metaplex-foundation/umi-bundle-defaults";
 import { walletAdapterIdentity } from "@metaplex-foundation/umi-signer-wallet-adapters";
 import { mplTokenMetadata } from "@metaplex-foundation/mpl-token-metadata";
 import { irysUploader } from "@metaplex-foundation/umi-uploader-irys";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export function TokenLaunchpad() {
   const nameRef = useRef();
@@ -138,12 +140,42 @@ export function TokenLaunchpad() {
      await wallet.sendTransaction(transaction2, connection);
  
      console.log("minted!!");
-   } catch (error) {
-    console.log("Error while creating token!")
-   }
+     toast.success('Token successfully minted! Check your wallet or console for details.', {
+      position: "top-right",
+      autoClose: 10000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      theme: "dark",
+    });
+  } catch (error) {
+    console.log("Error while creating token!", error);
+    toast.error("Error while creating token! Check console for details.", {
+      position: "top-right",
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      theme: "dark",
+    });}
   };
   return (
     <div className=" flex text-white justify-center items-center flex-col h-full ">
+      <ToastContainer
+position="top-right"
+autoClose={5000}
+hideProgressBar={false}
+newestOnTop={false}
+closeOnClick
+rtl={false}
+pauseOnFocusLoss
+draggable
+pauseOnHover
+theme="dark"
+transition: Bounce
+/>
       <h1 className="text-white text-5xl font-extrabold mb-8 text-center">
         Solana Token Launchpad
       </h1>
