@@ -1,23 +1,24 @@
 import { useEffect, useState } from "react";
 import { mnemonicToSeed, mnemonicToSeedSync } from "bip39";
-// import { derivePath } from "ed25519-hd-key";
-import {derivePath} from '../../node_modules/ed25519-hd-key/dist/index.js'
-// import * as ed25519 from 'ed25519-hd-key';
-// const { derivePath } = ed25519;
-// import { Keypair,  clusterApiUrl, Connection, PublicKey} from "@solana/web3.js";
-import {Keypair, clusterApiUrl, Connection, PublicKey} from '../../node_modules/@solana/web3.js/lib/index.esm.js'
+// import { derivePath } from "ed25519-hd-key";     // for development
+import { derivePath } from "../../node_modules/ed25519-hd-key/dist/index.js"; // for production
+// import { Keypair,  clusterApiUrl, Connection, PublicKey} from "@solana/web3.js";      // for development
+import {
+  Keypair,
+  clusterApiUrl,
+  Connection,
+  PublicKey,
+} from "../../node_modules/@solana/web3.js/lib/index.iife.js"; // for production
 import nacl from "tweetnacl";
 import Card from "./Card";
-import bs58 from 'bs58'
+import bs58 from "bs58";
 
 export function SolanaWallet({ mnemonic }) {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const[keyPairs, setKeyPairs] = useState([])
+  const [keyPairs, setKeyPairs] = useState([]);
   const getBalance = async (publicKey, setBalance) => {
     const connection = new Connection(clusterApiUrl("devnet"), "confirmed");
-    const publicKey2 = new PublicKey(
-      publicKey
-    );
+    const publicKey2 = new PublicKey(publicKey);
     const bal = await connection.getBalance(publicKey2);
     const balance = (bal / 1e9).toFixed(2);
     setBalance(balance);
@@ -28,7 +29,7 @@ export function SolanaWallet({ mnemonic }) {
     const y = JSON.parse(x);
     setKeyPairs([...y]);
   }, []);
-  
+
   const addSolWallet = async function () {
     const seed = await mnemonicToSeed(mnemonic);
     console.log("seed: ", seed, "mnemonic: ", mnemonic);
@@ -47,7 +48,6 @@ export function SolanaWallet({ mnemonic }) {
       return updatedKeyPairs;
     });
   };
-  
 
   return (
     <div>
@@ -62,7 +62,12 @@ export function SolanaWallet({ mnemonic }) {
         <div className="flex flex-col  space-y-2 mt-8 bg-violet-950 p-2 border rounded-md border-gray-500  text-white">
           {keyPairs.map((kp, ind) => (
             <div key={ind}>
-              <Card keyPair={{publicKey:kp.publicKey,privateKey:kp.privateKey}} getBalance={getBalance} currency={"SOL"} setState={setKeyPairs} />
+              <Card
+                keyPair={{ publicKey: kp.publicKey, privateKey: kp.privateKey }}
+                getBalance={getBalance}
+                currency={"SOL"}
+                setState={setKeyPairs}
+              />
             </div>
           ))}
         </div>
