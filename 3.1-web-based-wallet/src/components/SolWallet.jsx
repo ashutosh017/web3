@@ -8,7 +8,7 @@ import {
   clusterApiUrl,
   Connection,
   PublicKey,
-} from "../../node_modules/@solana/web3.js/lib/index.iife.js"; // for production
+} from "../../node_modules/@solana/web3.js/lib/index.esm.js"; // for production
 import nacl from "tweetnacl";
 import Card from "./Card";
 import bs58 from "bs58";
